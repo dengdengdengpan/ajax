@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>加载更多</title>
+        <style>
+            body {
+                margin: 0;
+            }
+            ul {
+                margin: 0;
+                padding-left: 0;
+            }
+            li {
+                list-style-type: none;
+            }
+            .layout {
+                width: 70%;
+                margin: 50px auto 0 auto;
+            }
+            .news-list > .item {
+                margin-bottom: 10px;
+                padding: 5px 0 5px 20px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+                line-height: 20px;
+            }
+            .loadmore-btn {
+                width: 80px;
+                margin: 30px auto 0 auto;
+                padding: 10px 15px;
+                border: 1px solid #409eff;
+                border-radius: 18px;
+                background-color: #409eff;
+                font-size: 16px;
+                color: #fff;
+                letter-spacing: 1px;
+                text-align: center;
+                line-height: 1;
+                cursor: pointer;
+                user-select: none;
+            }
+            .loadmore-btn:hover {
+                border-color: #66b1ff;
+                background-color: #66b1ff;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="layout">
+            <div id="loadmore-wrap">
+                <ul class="news-list"></ul>
+                <div class="loadmore-btn">加载更多</div>
+            </div>
+        </div>
+        <script src="./js/loadmore-m.js" type="module"></script>
+    </body>
+</html>
