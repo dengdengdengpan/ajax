@@ -3,6 +3,7 @@
 let newsList = document.querySelector('.news-list'),
     loadMoreBtn = document.querySelector('.loadmore-btn'),
     curIndex = 1,
+    increasedLenth = 5,
     isRespDataArrived = true;
 
 // 加载更多 按钮点击事件
@@ -12,7 +13,7 @@ loadMoreBtn.addEventListener('click', () => {
     }
     loadData(function (respData) {
         renderPage(respData);
-        curIndex += 5;
+        curIndex += increasedLenth;
         isRespDataArrived = true;
     });
     isRespDataArrived = false;
@@ -25,7 +26,7 @@ function loadData(callback) {
         url: '/loadMore',
         data: {
             index: curIndex,
-            length: 5
+            length: increasedLenth
         },
         respDataType: 'text',
         onSuccess: callback
@@ -72,7 +73,7 @@ function ajax(obj) {
         }
     };
     xhr.ontimeout = function () {
-        console.log('HTTP 请求时间超过限制');
+        console.log('HTTP 请求的时间超过设置的限制时间');
     };
     xhr.onerror = onError;
     

@@ -3,6 +3,7 @@
 let newsList = document.querySelector('.news-list'),
     loadMoreBtn = document.querySelector('.loadmore-btn'),
     curIndex = 1,
+    increasedLenth = 5,
     isRespDataArrived = true;
 
 loadMoreBtn.addEventListener('click', () => {
@@ -13,12 +14,12 @@ loadMoreBtn.addEventListener('click', () => {
     let xhr = new XMLHttpRequest();
     /**
      * 1.我需要后台返回什么样的数据？
-     * 返回JSON格式的数据['新闻 1', '新闻 2', '新闻 3', '新闻 4', '新闻 5']
+     * 返回JSON格式的数据，可以是JSON对象，也可以是JSON格式的字符串，['新闻 1', '新闻 2', '新闻 3', '新闻 4', '新闻 5']
      * 2.我需要给后台什么样的数据？
      * 最主要的两个，一个是当前新闻的下标是多少，另一个是每次加载新闻的条数是多好
      * curIndex=1&length=5
      */
-    xhr.open('GET', '/loadMore?index=' + curIndex + '&length=5');
+    xhr.open('GET', '/loadMore?index=' + curIndex + '&length=' + increasedLenth);
     xhr.responseType = 'json';
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -36,7 +37,7 @@ loadMoreBtn.addEventListener('click', () => {
                     docFragment.appendChild(elLi);
                 });
                 newsList.appendChild(docFragment);
-                curIndex += 5;
+                curIndex += increasedLenth;
                 isRespDataArrived = true;
             } else {
                 console.log('There was a problem with the request: ' + xhr.status + ' ' + xhr.statusText);
