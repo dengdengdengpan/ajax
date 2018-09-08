@@ -5,15 +5,20 @@ let newsList = document.querySelector('.news-list'),
     curIndex = 1,
     isRespDataArrived = true;
 
+// 加载更多 按钮点击事件
 loadMoreBtn.addEventListener('click', () => {
     if (!isRespDataArrived) {
         return;
     }
     loadData(function (respData) {
         renderPage(respData);
+        curIndex += 5;
+        isRespDataArrived = true;
     });
+    isRespDataArrived = false;
 });
 
+// 加载数据，其实就是发送一个 ajax 请求
 function loadData(callback) {
     ajax({
         method: 'GET',
@@ -22,13 +27,12 @@ function loadData(callback) {
             index: curIndex,
             length: 5
         },
-        onSuccess: callback,
-        onError: function() {
-            console.log('xxx')
-        }
+        respDataType: 'text',
+        onSuccess: callback
     });
 }
 
+// 得到数据后处理并渲染在页面上
 function renderPage(respData) {
     let docFragment = document.createDocumentFragment();
     respData.forEach((item, index) => {
@@ -40,6 +44,7 @@ function renderPage(respData) {
     newsList.appendChild(docFragment);
 }
 
+// 封装的一个 ajax 函数
 function ajax(obj) {
     let method = obj.method.toUpperCase() || 'GET',
         url = obj.url,
@@ -48,7 +53,7 @@ function ajax(obj) {
         respDataType = obj.respDataType || 'json',
         onSuccess = obj.onSuccess || function () {
             console.log('请自己写一个处理服务器的响应成功的函数');
-        };
+        },
         onError = obj.onError || function () {
             console.log('Network error');
         };
@@ -59,7 +64,7 @@ function ajax(obj) {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if ((xhr.status >= 200 && xhr.status < 300) || (xhr.status === 304)) {
-                let respData = xhr.response;
+                let respData = judgeRespType(xhr);
                 onSuccess(respData);
             } else {
                 console.log(xhr.status + ' ' + xhr.statusText);
@@ -89,4 +94,14 @@ function getReqParams(data) {
         dataStr.push(key + '=' + data[key]);
     }
     return dataStr.join('&');
+}
+
+function judgeRespType(xhr) {
+    if (xhr.responseType === 'json') {
+        return xhr.response;
+    } else if (xhr.responseType === 'text') {
+        return JSON.parse(xhr.responseText);
+    } else {
+        console.log('暂时还不支持这种数据类型');
+    }
 }
