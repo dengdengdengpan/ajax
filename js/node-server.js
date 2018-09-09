@@ -42,7 +42,7 @@ function simpleRouterPath(request,response) {
             //模拟网速很慢的情况
             setTimeout(function() {
                 response.end(JSON.stringify(createNewsData(pathObj)));
-            }, (Math.random() * 10 + 5) * 1000);
+            }, (Math.random() * 10) * 1000);
             break;
         default:
             staticRoot(path.dirname(__dirname),request,response);

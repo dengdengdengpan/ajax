@@ -41,8 +41,9 @@ Ajax.prototype.createXhr = function () {
     // Network error
     xhr.error = this.onError;
 };
+// 判断请求的方法
 Ajax.prototype.judgeReqMethod = function (xhr) {
-    let param = this.getReqParams(this.data),
+    let param = this.formatReqParams(this.data),
         realUrl = param ? this.url += '?' + param : this.url;
     if (this.method === 'GET') {
         xhr.open(this.method, realUrl);
@@ -55,6 +56,7 @@ Ajax.prototype.judgeReqMethod = function (xhr) {
         console.log(this.method + ' is not currently supported');
     }
 };
+// 处理服务器的响应
 Ajax.prototype.handleResponse = function (xhr) {
     let _this = this;
     xhr.onreadystatechange = function () {
@@ -65,23 +67,26 @@ Ajax.prototype.handleResponse = function (xhr) {
                 _this.onSuccess(respData);
             } else {
                 // 服务器响应失败的状态码及对应的文本信息
-                console.log(xhr.status + ' ' + xhr.statusText);
+                console.log('error: ' + xhr.status + ' ' + xhr.statusText);
             }
         }
     };
 };
+// 处理 timeout 事件
 Ajax.prototype.handleTimeout = function (xhr) {
     xhr.ontimeout = function() {
         console.log('HTTP 请求的时间超过设置的限制时间');
     };
 };
-Ajax.prototype.getReqParams = function (data) {
+// 参数格式化
+Ajax.prototype.formatReqParams = function (data) {
     let dataStr = [];
     for (let key in data) {
         dataStr.push(key + '=' + data[key]);
     }
     return dataStr.join('&');
 };
+// 判断响应的数据的类型
 Ajax.prototype.judgeRespType = function (xhr) {
     if (xhr.responseType === 'json') {
         return xhr.response;

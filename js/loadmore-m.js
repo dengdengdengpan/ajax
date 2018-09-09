@@ -77,7 +77,7 @@ function ajax(obj) {
     };
     xhr.onerror = onError;
     
-    let reqParams = getReqParams(data),
+    let reqParams = formatReqParams(data),
         realUrl = reqParams ? url += '?' + reqParams : url;
     if (method === 'GET') {
         xhr.open(method, realUrl);
@@ -89,7 +89,7 @@ function ajax(obj) {
     }
 }
 
-function getReqParams(data) {
+function formatReqParams(data) {
     let dataStr = [];
     for (let key in data) {
         dataStr.push(key + '=' + data[key]);
