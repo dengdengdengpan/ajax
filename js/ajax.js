@@ -15,33 +15,33 @@ Ajax.prototype.init = function () {
     // 返回数据类型，默认是json
     this.respDataType = this.obj.respDataType || 'json';
     // 响应成功处理得到数据的函数
-    this.onsuccess = this.obj.onsuccess || function () {
+    this.onSuccess = this.obj.onSuccess || function () {
         console.log('请自己写一个处理响应成功的函数');
     };
     // 请求过程中，当发生网络层级别异常的处理函数
-    this.onerror = this.obj.onerror || function () {
+    this.onError = this.obj.onError || function () {
         console.log('自己写一个处理 Network error 的函数');
     };
 };
 Ajax.prototype.createXhr = function () {
     // 创建 XMLHttpRequest 实例对象 xhr
-    let xhr = this.xhr = new XMLHttpRequest();
-    // 初始化一个 HTTP 请求
-    this.judgeReqMethod();
+    let xhr = new XMLHttpRequest();
+    // 初始化一个 HTTP 请求并发送
+    this.judgeReqMethod(xhr);
     // 设置请求的超时时间
     xhr.timeout = this.timeout;
     // 设置服务器响应的数据类型
     xhr.responseType = this.respDataType;
     // 处理服务器的响应
-    this.handleResponse();
+    this.handleResponse(xhr);
     // 请求超时的处理
-    xhr.ontimeout = this.handleTimeout();
+    this.handleTimeout(xhr);
     // Network error
-    xhr.error = this.onerror;
+    xhr.error = this.onError;
 };
-Ajax.prototype.judgeReqMethod = function () {
-    let xhr = this.xhr,
-        param = this.getParams(this.data),
+// 判断请求的方法
+Ajax.prototype.judgeReqMethod = function (xhr) {
+    let param = this.formatReqParams(this.data),
         realUrl = param ? this.url += '?' + param : this.url;
     if (this.method === 'GET') {
         xhr.open(this.method, realUrl);
@@ -54,43 +54,59 @@ Ajax.prototype.judgeReqMethod = function () {
         console.log(this.method + ' is not currently supported');
     }
 };
-Ajax.prototype.handleResponse = function () {
-    let xhr = this.xhr,
-        _this = this;
+// 处理服务器的响应
+Ajax.prototype.handleResponse = function (xhr) {
+    let _this = this;
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if ((xhr.status >= 200 && xhr.status < 300) || (xhr.status === 304)) {
                 // 服务器响应成功了
-                _this.onsuccess(xhr.response);
+                let respData = _this.judgeRespType(xhr);
+                _this.onSuccess(respData);
             } else {
                 // 服务器响应失败的状态码及对应的文本信息
-                console.log(xhr.status + ' ' + xhr.statusText);
+                console.log('error: ' + xhr.status + ' ' + xhr.statusText);
             }
         }
     };
 };
-Ajax.prototype.handleTimeout = function () {
-    console.log('timeout');
+// 处理 timeout 事件
+Ajax.prototype.handleTimeout = function (xhr) {
+    xhr.ontimeout = function() {
+        console.log('HTTP 请求的时间超过设置的限制时间');
+    };
 };
-Ajax.prototype.getParams = function (data) {
+// 参数格式化
+Ajax.prototype.formatReqParams = function (data) {
     let dataStr = [];
     for (let key in data) {
         dataStr.push(key + '=' + data[key]);
     }
     return dataStr.join('&');
 };
+// 判断响应的数据的类型
+Ajax.prototype.judgeRespType = function (xhr) {
+    if (xhr.responseType === 'json') {
+        return xhr.response;
+    } else if (xhr.responseType === 'text') {
+        return JSON.parse(xhr.responseText);
+    } else {
+        console.log('暂时还不支持这种数据类型');
+    }
+};
 
-// let ajax = new Ajax({
-//     url: '/login.json',
-//     timeout: 5000,
-//     data: {
-//         username: 'xxx',
-//         password: 123
-//     },
-//     onsuccess: function (respData) {
-//         console.log(respData);
-//     },
-//     onerror: function () {
-//         console.log('Network error');
-//     }
-// });
+// usage
+let ajax = new Ajax({
+    url: '/login.json',
+    timeout: 5000,
+    data: {
+        username: 'xxx',
+        password: 123
+    },
+    onSuccess: function (respData) {
+        console.log(respData);
+    },
+    onError: function () {
+        console.log('Network error');
+    }
+});
